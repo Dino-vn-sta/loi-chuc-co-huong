@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#073b55">
+  <meta name="description" content="Một món quà nhỏ gửi đến Cô Hương, với lòng biết ơn của tập thể lớp CL24A.">
+  <title>Món quà gửi Cô Hương · CL24A</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --deep: #073b55;
+      --ocean: #0c6075;
+      --teal: #4a9b9b;
+      --foam: #e9f8f4;
+      --sand: #fff3d8;
+      --gold: #f2cf83;
+      --ink: #174b5d;
+      --muted: #64828a;
+      --white: #fffdf8;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      overflow-x: hidden;
+      font-family: "Segoe UI", "Noto Sans", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--deep);
+    }
+    button { font: inherit; }
+    .scene {
+      position: relative;
+      display: none;
+      min-height: 100vh;
+      min-height: 100svh;
+      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+      padding: max(76px, env(safe-area-inset-top)) 20px max(34px, env(safe-area-inset-bottom));
+      text-align: center;
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse at 50% 12%, #ddf8ee 0, #b5e7df 27%, #58b3b0 58%, #12647b 100%);
+    }
+    .scene::before, .scene::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: -12%;
+      width: 124%;
+      height: 190px;
+      border-radius: 50% 50% 0 0 / 28% 28% 0 0;
+      pointer-events: none;
+    }
+    .scene::before { bottom: -132px; background: #e8d5a5; opacity: .8; }
+    .scene::after { bottom: -151px; background: #f8e9c5; opacity: .9; }
+    .scene.active { display: flex; animation: fade-in .7s ease both; }
+    .inner { width: min(680px, 100%); position: relative; z-index: 2; margin: auto; }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+    .progress {
+      position: fixed; z-index: 10; top: max(13px, env(safe-area-inset-top)); left: 50%;
+      transform: translateX(-50%); display: flex; gap: 9px; align-items: center;
+      padding: 10px 14px; border: 1px solid #ffffff72; border-radius: 30px;
+      background: #effbf0c9; backdrop-filter: blur(9px);
+    }
+    .dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: #9dcac2; }
+    .dot.on { background: #c39042; box-shadow: 0 0 0 3px #f4d99b88; }
+    .sound {
+      position: fixed; z-index: 11; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+      min-height: 42px; padding: 9px 13px; border: 1px solid #ffffff85; border-radius: 24px;
+      color: #15566b; background: #effbf0e8; cursor: pointer;
+    }
+    .kicker { margin: 0 0 12px; color: #fff9db; font-size: 12px; letter-spacing: .2em; text-shadow: 0 1px 5px #15566b66; }
+    h1, h2 { margin: 9px 0 16px; font-weight: 650; color: #073b55; }
+    h1 { font-size: clamp(32px, 8vw, 54px); letter-spacing: .04em; }
+    h2 { font-size: clamp(25px, 6vw, 37px); }
+    .lead { max-width: 520px; margin: 12px auto; font-size: clamp(15px, 3.8vw, 18px); line-height: 1.95; color: #174d60; }
+    .small { color: #42717c; font-size: 13px; line-height: 1.8; }
+    .card {
+      max-width: 530px; margin: 22px auto; padding: 24px clamp(18px, 5vw, 34px);
+      border: 1px solid #fff9; border-radius: 23px; background: #f8fff0d9;
+      box-shadow: 0 18px 48px #06415a24; backdrop-filter: blur(6px);
+    }
+    .btn {
+      display: inline-flex; min-height: 48px; align-items: center; justify-content: center;
+      margin: 9px 5px; padding: 12px 22px; border: 1px solid #f5d894; border-radius: 999px;
+      color: #fffdf5; background: #0b6076; box-shadow: 0 8px 20px #06415a24;
+      letter-spacing: .03em; cursor: pointer; transition: transform .2s, background .2s;
+    }
+    .btn:hover { transform: translateY(-2px); background: #084b64; }
+    .btn:focus-visible, .dot:focus-visible, .sound:focus-visible, .star:focus-visible, .wish:focus-visible { outline: 3px solid #f2cf83; outline-offset: 3px; }
+    .btn.secondary { color: #15566b; background: #f4f8e9; }
+    .gift { width: 164px; height: 142px; position: relative; margin: 30px auto 23px; animation: bob 3.5s ease-in-out infinite; }
+    .gift-base { position: absolute; left: 8px; bottom: 0; width: 148px; height: 90px; border-radius: 5px 5px 14px 14px; background: #f0c985; box-shadow: 0 14px 25px #073b5533; }
+    .gift-lid { position: absolute; z-index: 2; top: 38px; left: 0; width: 164px; height: 27px; border-radius: 6px; background: #dfab66; transition: transform .8s; }
+    .gift-ribbon { position: absolute; z-index: 3; left: 73px; bottom: 0; width: 19px; height: 90px; background: #eff4dc; }
+    .gift-bow { position: absolute; z-index: 4; left: 59px; top: 15px; width: 48px; height: 29px; border: 6px solid #f5f0d7; border-radius: 50%; transform: rotate(12deg); }
+    .gift.open .gift-lid { transform: translate(-10px,-48px) rotate(-13deg); }
+    @keyframes bob { 50% { transform: translateY(-8px); } }
+    .book-title { color: #98713c; font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+    .book-text { min-height: 130px; white-space: pre-line; font-size: 16px; line-height: 2; }
+    .book-page { color: #82999a; font-size: 13px; }
+    .stars { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 3vw, 21px); margin: 27px auto; }
+    .star { min-width: 48px; min-height: 52px; border: 0; color: #fff1b1; background: transparent; font-size: 39px; cursor: pointer; opacity: .68; transition: transform .25s, opacity .25s, text-shadow .25s; }
+    .star.lit { color: #fff4ad; opacity: 1; transform: scale(1.22); text-shadow: 0 0 22px #fff3a8; }
+    .message { min-height: 74px; padding: 16px 10px; border-top: 1px solid #8bb9b280; border-bottom: 1px solid #8bb9b280; line-height: 1.9; }
+    .capsule { position: relative; width: 190px; height: 112px; margin: 32px auto; border: 2px solid #b68b4f; border-radius: 18px 18px 30px 30px; background: linear-gradient(145deg,#f8e7bf,#d3ad70); box-shadow: 0 15px 25px #073b5528; transition: transform .5s; }
+    .capsule::before { content: ""; position: absolute; left: -8px; right: -8px; top: -15px; height: 28px; border: 2px solid #b68b4f; border-radius: 12px; background: #fff0cb; }
+    .capsule.open { transform: rotate(-3deg) translateY(6px); }
+    .wishes { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; max-width: 470px; margin: 22px auto; }
+    .wish { min-height: 66px; padding: 12px 8px; border: 1px solid #c5dcd0; border-radius: 15px; color: #17576b; background: #f5fff0e8; cursor: pointer; }
+    .wish span { display: block; margin-top: 4px; color: #77918d; font-size: 12px; }
+    .wish.done { background: #e9f2d8; box-shadow: inset 0 0 0 2px #c9ab69; }
+    .flower { margin: 8px auto; font-size: 92px; filter: drop-shadow(0 10px 12px #164c4c22); animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 50% { transform: rotate(5deg); } }
+    .signature { max-width: 390px; margin: 20px auto; padding-top: 16px; border-top: 1px solid #83b1aa88; color: #9b6f32; font-size: 18px; font-weight: 600; }
+    .bubble { position: absolute; z-index: 0; bottom: -40px; width: 12px; height: 12px; border: 1px solid #fff9; border-radius: 50%; background: #eaffff54; animation: rise linear forwards; pointer-events: none; }
+    @keyframes rise { to { transform: translateY(-115vh) translateX(24px); opacity: 0; } }
+    .fish { position: absolute; z-index: 0; left: -70px; bottom: 17%; font-size: 30px; opacity: .48; animation: swim 18s linear infinite; pointer-events: none; }
+    @keyframes swim { to { left: calc(100% + 70px); } }
+    [hidden] { display: none !important; }
+    @media (max-width: 480px) {
+      .scene { padding-left: 16px; padding-right: 16px; }
+      .sound { min-height: 40px; padding: 8px 10px; font-size: 12px; }
+      .progress { left: 14px; transform: none; gap: 7px; padding: 9px 11px; }
+      .card { padding-top: 20px; padding-bottom: 20px; }
+      .wishes { gap: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="progress" aria-label="Tiến trình món quà">
+    <button class="dot on" aria-label="Mở chương 1" aria-current="step" onclick="go(0)"></button>
+    <button class="dot" aria-label="Mở chương 2" onclick="go(1)"></button>
+    <button class="dot" aria-label="Mở chương 3" onclick="go(2)"></button>
+    <button class="dot" aria-label="Mở chương 4" onclick="go(3)"></button>
+    <button class="dot" aria-label="Mở chương 5" onclick="go(4)"></button>
+  </nav>
+  <button class="sound" id="soundButton" type="button" onclick="toggleMusic()" aria-pressed="false">♫ Bật nhạc dịu êm</button>
+
+  <main>
+    <section class="scene active" id="s1">
+      <div class="inner">
+        <p class="kicker">20 · 11 · 2026　✦　MÓN QUÀ TỪ ĐẠI DƯƠNG</p>
+        <p class="small">Gửi Cô Hương thân mến</p>
+        <h1>Một món quà<br>đong đầy biết ơn</h1>
+        <p class="lead">Từ những con sóng dịu dàng của lớp CL24A,<br>chúng em gửi cô một chút yêu thương và lời cảm ơn chân thành.</p>
+        <div class="gift" id="gift" aria-hidden="true"><div class="gift-lid"></div><div class="gift-base"></div><div class="gift-ribbon"></div><div class="gift-bow"></div></div>
+        <button class="btn" onclick="openGift()">Mở món quà nhỏ</button>
+        <p class="small" id="giftLine">Trong món quà này là những kỷ niệm và lời chúc từ chúng em.</p>
+      </div>
+    </section>
+
+    <section class="scene" id="s2">
+      <div class="inner">
+        <p class="kicker">CHƯƠNG HAI · NHỮNG ĐIỀU ĐÁNG NHỚ</p>
+        <h2>Trang sách dưới biển xanh</h2>
+        <p class="lead">Mỗi trang là một lời cảm ơn chúng em muốn gửi đến cô.</p>
+        <div class="card">
+          <div class="book-title" id="bookTitle"></div>
+          <div class="book-text" id="bookText"></div>
+          <div class="book-page" id="bookPage"></div>
+        </div>
+        <button class="btn secondary" onclick="turnPage(-1)">Trang trước</button>
+        <button class="btn" onclick="turnPage(1)">Trang tiếp theo</button>
+        <p class="small">Mỗi bài học cô trao đều là một viên ngọc quý.</p>
+      </div>
+    </section>
+
+    <section class="scene" id="s3">
+      <div class="inner">
+        <p class="kicker">CHƯƠNG BA · THẮP SÁNG LỜI TRI ÂN</p>
+        <h2>Những vì sao biết ơn</h2>
+        <p class="lead">Chạm vào từng ngôi sao để mở ra lời chúng em muốn nói.</p>
+        <div class="stars" aria-label="Những lời chúc">
+          <button class="star" aria-label="Lời chúc 1" onclick="lightStar(0)">✦</button>
+          <button class="star" aria-label="Lời chúc 2" onclick="lightStar(1)">✧</button>
+          <button class="star" aria-label="Lời chúc 3" onclick="lightStar(2)">✦</button>
+          <button class="star" aria-label="Lời chúc 4" onclick="lightStar(3)">✧</button>
+          <button class="star" aria-label="Lời chúc 5" onclick="lightStar(4)">✦</button>
+        </div>
+        <div class="card message" id="starMessage" aria-live="polite">Một lời chúc đang chờ cô khám phá.</div>
+        <p class="small" id="starCount">Đã thắp sáng 0 / 5 ngôi sao</p>
+      </div>
+    </section>
+
+    <section class="scene" id="s4">
+      <div class="inner">
+        <p class="kicker">CHƯƠNG BỐN · GỬI ĐIỀU ƯỚC ĐẾN TƯƠNG LAI</p>
+        <h2>Chiếc hộp thời gian</h2>
+        <p class="lead">Cùng cất giữ những điều tốt đẹp mà chúng em mong cô luôn có trong cuộc sống.</p>
+        <div class="capsule" id="capsule" aria-hidden="true"></div>
+        <button class="btn" id="capsuleButton" onclick="openCapsule()">Mở hộp điều ước</button>
+        <div class="wishes" id="wishes" hidden>
+          <button class="wish" onclick="showWish(this,0)">Sức khỏe<span>Chạm để mở</span></button>
+          <button class="wish" onclick="showWish(this,1)">Niềm vui<span>Chạm để mở</span></button>
+          <button class="wish" onclick="showWish(this,2)">Bình yên<span>Chạm để mở</span></button>
+          <button class="wish" onclick="showWish(this,3)">Những ước mơ đẹp<span>Chạm để mở</span></button>
+        </div>
+        <div class="card message" id="wishMessage" aria-live="polite"></div>
+        <p class="small" id="capsuleEnd"></p>
+      </div>
+    </section>
+
+    <section class="scene" id="s5">
+      <div class="inner">
+        <p class="kicker">20 · 11 · 2026　✦　LỜI CHÚC TỪ CL24A</p>
+        <h2>Chúc mừng ngày Nhà giáo Việt Nam</h2>
+        <p class="lead">Kính gửi Cô Hương thân mến,<br>chúc cô luôn mạnh khỏe, bình an và ngập tràn niềm vui.</p>
+        <div class="flower" aria-label="Hoa hướng dương">🌻</div>
+        <p class="lead">Mong rằng mọi tâm huyết cô dành cho chúng em đều nở thành những mùa hoa đẹp. Cảm ơn cô vì đã dạy dỗ, động viên và đồng hành cùng chúng em.</p>
+        <p class="small">Với tất cả lòng biết ơn,</p>
+        <div class="signature">Tập thể lớp CL24A</div>
+        <button class="btn" onclick="restart()">Xem lại món quà</button>
+        <p class="small">Mong dịu dàng và hạnh phúc luôn ở bên cô.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const scenes = [...document.querySelectorAll('.scene')];
+    const dots = [...document.querySelectorAll('.dot')];
+    let current = 0;
+    let page = 0;
+    const lit = new Set();
+    const wished = new Set();
+    let audioContext = null;
+    let musicTimer = null;
+    let musicOn = false;
+
+    function go(index) {
+      current = Math.max(0, Math.min(scenes.length - 1, index));
+      scenes.forEach((scene, i) => scene.classList.toggle('active', i === current));
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('on', i === current);
+        if (i === current) dot.setAttribute('aria-current', 'step');
+        else dot.removeAttribute('aria-current');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      bubbles();
+    }
+
+    function bubbles() {
+      const active = document.querySelector('.scene.active');
+      for (let i = 0; i < 9; i++) {
+        const bubble = document.createElement('i');
+        bubble.className = 'bubble';
+        bubble.style.left = Math.random() * 100 + '%';
+        bubble.style.animationDuration = (7 + Math.random() * 8) + 's';
+        bubble.style.animationDelay = (Math.random() * 3) + 's';
+        const size = 6 + Math.random() * 14;
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        active.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 16000);
+      }
+      const fish = document.createElement('span');
+      fish.className = 'fish';
+      fish.setAttribute('aria-hidden', 'true');
+      fish.textContent = Math.random() > .5 ? '🐠' : '🐟';
+      active.appendChild(fish);
+      setTimeout(() => fish.remove(), 19000);
+    }
+
+    function openGift() {
+      document.getElementById('gift').classList.add('open');
+      document.getElementById('giftLine').textContent = 'Từng điều nhỏ bé trong này đều được gửi đến cô bằng cả tấm lòng.';
+      setTimeout(() => go(1), 900);
+    }
+
+    const pages = [
+      ['Một món quà tri ân', 'Gửi Cô Hương thân mến\n\nCảm ơn cô đã gieo vào chúng em tình yêu với tri thức và những điều tốt đẹp.', 'Lời mở đầu'],
+      ['Về những bài học', 'Có những điều cô dạy, ban đầu tưởng như thật giản dị.\n\nRồi theo thời gian, chúng em hiểu đó là hành trang quý giá để tự tin bước tiếp.', 'Trang thứ nhất'],
+      ['Về sự đồng hành', 'Cảm ơn cô đã kiên nhẫn lắng nghe, dịu dàng nhắc nhở và luôn động viên chúng em.\n\nSự quan tâm của cô khiến mỗi ngày đến lớp thêm ấm áp.', 'Trang thứ hai'],
+      ['Về lòng biết ơn', 'Chúng em sẽ luôn trân trọng những điều cô đã trao.\n\nMong rằng niềm vui và yêu thương cô dành cho mọi người sẽ trở về với cô thật nhiều.', 'Trang cuối']
+    ];
+    function renderPage() {
+      document.getElementById('bookTitle').textContent = pages[page][0];
+      document.getElementById('bookText').textContent = pages[page][1];
+      document.getElementById('bookPage').textContent = pages[page][2];
+    }
+    function turnPage(direction) {
+      page = Math.max(0, Math.min(pages.length - 1, page + direction));
+      renderPage();
+      if (page === pages.length - 1) setTimeout(() => { if (current === 1) go(2); }, 700);
+    }
+
+    const starTexts = [
+      'Cô đã dạy chúng em không chỉ kiến thức, mà còn cả sự tự tin và lòng tử tế.',
+      'Sự quan tâm của cô là ánh sáng dịu dàng giúp chúng em vững bước mỗi ngày.',
+      'Cảm ơn cô đã luôn khích lệ chúng em thử sức và tin vào bản thân mình.',
+      'Nhờ sự tận tâm của cô, chúng em học được cách trưởng thành từ những lần vấp ngã.',
+      'Chúc cô luôn nhận được thật nhiều yêu thương, niềm vui và những ngày bình yên.'
+    ];
+    function lightStar(index) {
+      document.querySelectorAll('.star')[index].classList.add('lit');
+      document.getElementById('starMessage').textContent = starTexts[index];
+      lit.add(index);
+      document.getElementById('starCount').textContent = `Đã thắp sáng ${lit.size} / 5 ngôi sao`;
+      if (lit.size === 5) {
+        setTimeout(() => {
+          document.getElementById('starMessage').textContent = 'Trong lòng chúng em, cô luôn là một vì sao thật ấm áp.';
+          setTimeout(() => { if (current === 2) go(3); }, 2100);
+        }, 600);
+      }
+    }
+
+    function openCapsule() {
+      document.getElementById('capsule').classList.add('open');
+      document.getElementById('wishes').hidden = false;
+      document.getElementById('capsuleButton').hidden = true;
+    }
+    const wishTexts = [
+      'Chúc cô luôn dồi dào sức khỏe, mỗi ngày thức dậy đều tràn đầy năng lượng và mỗi tối được nghỉ ngơi thật an yên.',
+      'Mong những niềm vui giản dị luôn tìm đến cô, cùng nhiều thời gian dành cho những điều cô yêu thích.',
+      'Chúc cô luôn được yêu thương, sẻ chia và nâng niu như cách cô đã dịu dàng quan tâm đến chúng em.',
+      'Mong mỗi ngày phía trước đều có điều đáng mong chờ, những ước mơ đẹp luôn lấp lánh và thành quả ngọt ngào sẽ đến.'
+    ];
+    function showWish(element, index) {
+      element.classList.add('done');
+      element.querySelector('span').textContent = 'Đã gửi đến cô';
+      document.getElementById('wishMessage').textContent = wishTexts[index];
+      wished.add(index);
+      if (wished.size === 4) {
+        document.getElementById('capsuleEnd').textContent = 'Tất cả điều ước tốt đẹp xin được gửi đến cô.';
+        setTimeout(() => { if (current === 3) go(4); }, 2200);
+      }
+    }
+
+    // Giai điệu ambient nhẹ được tạo ngay trong trình duyệt; chỉ phát khi người xem chủ động bật.
+    function playNote(frequency, start, duration, volume) {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.03);
+    }
+    function playPhrase() {
+      if (!musicOn || !audioContext) return;
+      const now = audioContext.currentTime;
+      const notes = [261.63, 329.63, 392.00, 329.63, 293.66, 349.23, 440.00, 349.23];
+      notes.forEach((note, i) => playNote(note, now + i * 0.62, 1.5, 0.035));
+      playNote(130.81, now, 4.8, 0.018);
+    }
+    async function toggleMusic() {
+      const button = document.getElementById('soundButton');
+      if (!musicOn) {
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) throw new Error('Audio unavailable');
+          audioContext = audioContext || new AudioContextClass();
+          await audioContext.resume();
+          musicOn = true;
+          playPhrase();
+          musicTimer = setInterval(playPhrase, 5100);
+          button.textContent = '♫ Tắt nhạc';
+          button.setAttribute('aria-pressed', 'true');
+        } catch (error) {
+          button.textContent = 'Thiết bị chưa hỗ trợ nhạc';
+        }
+      } else {
+        musicOn = false;
+        clearInterval(musicTimer);
+        if (audioContext) await audioContext.suspend();
+        button.textContent = '♫ Bật nhạc dịu êm';
+        button.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    function restart() {
+      page = 0;
+      lit.clear();
+      wished.clear();
+      document.querySelectorAll('.star').forEach(star => star.classList.remove('lit'));
+      document.getElementById('starCount').textContent = 'Đã thắp sáng 0 / 5 ngôi sao';
+      document.getElementById('starMessage').textContent = 'Một lời chúc đang chờ cô khám phá.';
+      document.getElementById('gift').classList.remove('open');
+      document.getElementById('giftLine').textContent = 'Trong món quà này là những kỷ niệm và lời chúc từ chúng em.';
+      document.getElementById('wishes').hidden = true;
+      document.getElementById('capsuleButton').hidden = false;
+      document.querySelectorAll('.wish').forEach(wish => {
+        wish.classList.remove('done');
+        wish.querySelector('span').textContent = 'Chạm để mở';
+      });
+      document.getElementById('wishMessage').textContent = '';
+      document.getElementById('capsuleEnd').textContent = '';
+      document.getElementById('capsule').classList.remove('open');
+      renderPage();
+      go(0);
+    }
+
+    renderPage();
+    bubbles();
+  </script>
+</body>
+</html>
